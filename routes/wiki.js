@@ -27,22 +27,21 @@ router.get('/', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    const page = new Page({
-      // name: req.body.name,
-      // email: req.body.email,
-      title: req.body.title,
-      content: req.body.content,
-      status: req.body.status
-    });
+    // const page = new Page({
+    //   title: req.body.title,
+    //   content: req.body.content,
+    //   status: req.body.status
+    // });
 
+    //we use page (as an instance/row) variable to define a new row on our Page table. Then we can manipulate this new row(by calling page variable) however we want
+    const page = await Page.create(req.body);
+
+    //findOrCreate return an array of things. First one (we assigned it as user) is an object that has submission data. Second one (assigned as wasCreated) is True/False
     const [user, wasCreated] = await User.findOrCreate({
       where: { name: req.body.name, email: req.body.email }
     });
 
-    // console.log(page.__proto__);
-    // page.setAuthor(user);
-
-    await page.save();
+    await page.setAuthor(user);
 
     res.redirect(`/wiki/${page.slug}`);
   } catch (error) {
@@ -60,13 +59,23 @@ router.get('/add', async (req, res, next) => {
 
 router.get('/:slug', async (req, res, next) => {
   try {
-    const findSlug = await Page.findOne({
+    // console.log(page);
+    // const page = await Page.create();
+    // console.log('PAGEEEEEE', page);
+    // console.log(typeof page);
+    // console.log('PROTTTTOOOOO', page.__proto__);
+    // console.log('findAuthor HEREERERE', findAuthor);
+
+    const page = await Page.findOne({
       where: {
         slug: req.params.slug
       }
     });
-    res.send(wikipage(findSlug));
-    // res.send(`hit dynamic route at ${req.params.slug}`);
+    console.log('HERE IS TITLE', page.title);
+    const author = await page.getAuthor();
+    console.log('HERE IS author', author);
+
+    res.send(wikipage(page, author));
   } catch (error) {
     next(error);
   }

@@ -12,11 +12,10 @@ app.use(morgan('dev'));
 app.use(express.static(__dirname + '/public'));
 app.use(express.urlencoded({ extended: false }));
 app.use('/wiki', wikiRouter);
-app.use('/user', userRouter);
+app.use('/users', userRouter);
 
 app.get('/', async (req, res, next) => {
   res.redirect('/wiki');
-  // res.send(layout(''));
 });
 
 const PORT = 3000;

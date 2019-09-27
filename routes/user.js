@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userList = require('../views/userList');
 const userPages = require('../views/userPages');
-const { User } = require('../models');
+const { User, Page } = require('../models');
 
 router.get('/', async (req, res, next) => {
   try {
@@ -13,21 +13,27 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// MUST FIX AUTHOR-ID FOREIGN KEY FIRST TO MAKE THIS BELOW FUNCTION WORKS
-// router.get('/:id', async (req, res, next) => {
-//   try {
-//     const findOne = await User.findOne({where:{id = req.params.id}} )
-//     res.send(userPages(findOne))
-//   } catch (err) {
-//     next(err);
-//   }
-// });
-
 router.post('/', async (req, res, next) => {
   res.send('got to Post /user');
 });
 router.get('/add', async (req, res, next) => {
   res.send('got to Get /user/add');
+});
+
+router.get('/:id', async (req, res, next) => {
+  try {
+    const findUser = await User.findOne({
+      where: { id: req.params.id }
+    });
+
+    const findPage = await Page.findAll({
+      where: { authorId: req.params.id }
+    });
+
+    res.send(userPages(findUser, findPage));
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = router;

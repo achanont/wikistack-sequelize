@@ -1,37 +1,25 @@
+//instantiate sequelize (2 steps)
 const Sequelize = require('sequelize');
 const db = new Sequelize('postgres://localhost:5432/wikistack', {
   logging: false
 });
 
+//Define our models (models = tables)
 const Page = db.define('page', {
   title: {
     type: Sequelize.STRING,
     allowNull: false
-    // validate: {
-    //   isEmpty: false,
-    // },
   },
   slug: {
     type: Sequelize.STRING,
     allowNull: false
-    // validate: {
-    //   isEmpty: false,
-    // },
   },
   content: {
     type: Sequelize.TEXT,
     allowNull: false
-    // validate: {
-    //   isEmpty: false,
-    // },
   },
   status: {
     type: Sequelize.ENUM('open', 'closed')
-    // allowNull: false,
-    // defaultValue: 'closed',
-    // validate: {
-    //   isEmpty: false,
-    // },
   }
 });
 
@@ -39,6 +27,7 @@ function generateSlug(title) {
   return title.replace(/\s+/g, '_').replace(/\W/g, '');
 }
 
+//Hooks!
 Page.beforeValidate(page => {
   page.slug = generateSlug(page.title);
 });
